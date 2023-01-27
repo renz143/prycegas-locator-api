@@ -31,4 +31,12 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'salesforce' => [
+        'url' => env('SALESFORCE_URL'),
+        'client_id' => env('SALESFORCE_CLIENT_ID'),
+        'client_secret' => env('SALESFORCE_CLIENT_SECRET'),
+        'username' => env('SALESFORCE_USERNAME'),
+        'password' => env('SALESFORCE_PASSWORD'),
+    ]
+
 ];
