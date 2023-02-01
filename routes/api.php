@@ -19,5 +19,5 @@ Route::middleware('salesforce-token')->group(function () {
     Route::get('/products', [ProductController::class,'fetchProducts']);
     Route::get('/insert-products', [ProductController::class,'insertProductsFromSalesforceToDatabase']);
     Route::get('/fetch-products', [ProductController::class,'fetchProductsFromDatabase']);
-    Route::get('/test-fetch', [ProductController::class,'fetchProducts']);
+    Route::get('/test-fetch/{area}', [ProductController::class,'fetchProducts']);
 });

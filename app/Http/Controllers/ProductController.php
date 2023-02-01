@@ -15,10 +15,12 @@ class ProductController extends Controller
         $this->client = new Client(['base_uri' => config('services.salesforce.url')]);
     }
 
-    public function fetchProducts()
+    public function fetchProducts(Request $request)
     {
-        // $request->region
         // ex: vismin => 01s2v00000LYBvGAAX luzon => 01s2v00000LYBvBAAX
+        $areaCode = ($request->area === 'luzon') ? 'BAAX' : (($request->area === 'vismin') ? 'GAAX' : 'default');
+
+
         try {
             $query = 'SELECT id, Name, Pricebook2Id, Product2Id, ProductCode, UnitPrice FROM PricebookEntry WHERE IsActive=true AND UnitPrice!=0';
 
@@ -34,22 +36,18 @@ class ProductController extends Controller
             $responseData = json_decode($response->getBody(), true);
             $recordsArray = $responseData['records'];
 
-            $result = collect($recordsArray)->filter(function ($value, $key) {
-                $temp_array[] = $value['ProductCode'];
+            $collection = collect($recordsArray);
 
-                foreach ($temp_array as $array_item) {
-                    $a[] = $array_item;
-                }
+            $productCodeFilter = ['PHAASC', 'PHAVF', 'LPG11GC', 'LPG2.7GC', 'PHAPK', 'PHAPKS', 'TEST', 'CYL11', 'CYL2.7', 'CYL22'];
+            $pricebookIdFilter = ['01s2v00000My81DAAR', '01s2v00000My81IAAR', '01s2v00000I1HEkAAN'];
 
-                $b = ['PHAASC', 'PHAVF', 'LPG11GC', 'LPG2.7GC', 'PHAPK', 'PHAPKS', 'TEST', 'CYL11', 'CYL2.7', 'CYL22'];
+            $valuesToFilter = array_merge($productCodeFilter, $pricebookIdFilter);
 
-                if (!array_intersect($a, $b)) {
-                    return $value;
-                }
-
+            $filtered = $collection->filter(function ($values) use ($valuesToFilter, $areaCode) {
+                return !in_array($values['ProductCode'], $valuesToFilter) && !in_array($values['Pricebook2Id'], $valuesToFilter) && substr($values['Pricebook2Id'], -4) === $areaCode;
             })->values()->all();
 
-            return $result;
+            return $filtered;
 
         } catch (\Exception $exception) {
             return $exception->getMessage();
