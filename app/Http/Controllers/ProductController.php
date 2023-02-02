@@ -19,7 +19,7 @@ class ProductController extends Controller
     {
         // ex: vismin => 01s2v00000LYBvGAAX luzon => 01s2v00000LYBvBAAX
         $areaCode = ($request->area === 'luzon') ? 'BAAX' : (($request->area === 'vismin') ? 'GAAX' : 'default');
-
+        $productId = $request->productId;
 
         try {
             $query = 'SELECT id, Name, Pricebook2Id, Product2Id, ProductCode, UnitPrice FROM PricebookEntry WHERE IsActive=true AND UnitPrice!=0';
@@ -43,8 +43,14 @@ class ProductController extends Controller
 
             $valuesToFilter = array_merge($productCodeFilter, $pricebookIdFilter);
 
-            $filtered = $collection->filter(function ($values) use ($valuesToFilter, $areaCode) {
-                return !in_array($values['ProductCode'], $valuesToFilter) && !in_array($values['Pricebook2Id'], $valuesToFilter) && substr($values['Pricebook2Id'], -4) === $areaCode;
+            $filtered = $collection->filter(function ($values) use ($valuesToFilter, $areaCode, $productId) {
+                if (isset($productId)) {
+                    return !in_array($values['ProductCode'], $valuesToFilter) && !in_array($values['Pricebook2Id'], $valuesToFilter) && substr($values['Pricebook2Id'], -4) === $areaCode && $values['Product2Id'] === $productId;
+                }
+                if (!in_array($values['ProductCode'], $valuesToFilter) && !in_array($values['Pricebook2Id'], $valuesToFilter) && substr($values['Pricebook2Id'], -4) === $areaCode) {
+                    return $values;
+                }
+
             })->values()->all();
 
             return $filtered;
