@@ -17,9 +17,10 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('pricebook_id');
+            $table->string('pricebook_entry_id');
             $table->string('product_id');
             $table->string('product_code');
-            $table->string('unit_price');
+            $table->integer('unit_price');
             $table->string('status');
             $table->timestamps();
         });
