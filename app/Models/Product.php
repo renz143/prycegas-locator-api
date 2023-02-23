@@ -17,4 +17,9 @@ class Product extends Model
         'unit_price',
         'status',
     ];
+
+    public function product_images()
+    {
+        return $this->hasOne(ProductImage::class, 'product_code', 'product_code');
+    }
 }

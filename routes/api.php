@@ -18,6 +18,6 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('salesforce-token')->group(function () {
     Route::get('/products', [ProductController::class,'fetchProducts']);
     Route::get('/insert-products', [ProductController::class,'insertProductsFromSalesforceToDatabase']);
-    Route::get('/fetch-products', [ProductController::class,'fetchProductsFromDatabase']);
-    Route::get('/test-fetch/{area?}/{productId?}', [ProductController::class,'fetchProducts']);
+    Route::get('/fetch-products/{area?}/{productId?}', [ProductController::class,'fetchProductsFromDatabase']);
+    Route::get('/fetch-data-from-salesforce', [ProductController::class,'fetchProductsFromSalesforce']);
 });
